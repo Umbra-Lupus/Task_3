@@ -23,12 +23,21 @@ export default function AllPerks() {
 
   // ==================== SIDE EFFECTS WITH useEffect HOOK ====================
 
- /*
- TODO: HOOKS TO IMPLEMENT
- * useEffect Hook #1: Initial Data Loading
- * useEffect Hook #2: Auto-search on Input Change
+  // useEffect Hook #1: Initial Data Loading
+  useEffect(() => {
+    loadAllPerks();
+  }, []); // Dependency: empty array ensures this runs only once on mount
 
-*/
+  // useEffect Hook #2: Auto-search on Input Change
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      loadAllPerks();
+    }, 500); // Debounce to avoid too many requests
+
+    return () => clearTimeout(delayDebounceFn); // Cleanup timeout on unmount or re-run
+  }, [searchQuery, merchantFilter]); // Dependencies: re-run when searchQuery or merchantFilter changes
+
+
 
   
   useEffect(() => {
@@ -102,6 +111,13 @@ export default function AllPerks() {
     setMerchantFilter('')
   }
 
+  function handleSearchInputChange(e) {
+    setSearchQuery(e.target.value); // Update searchQuery state as user types
+  }
+
+  function handleMerchantFilterChange(e) {
+    setMerchantFilter(e.target.value); // Update merchantFilter state when user selects a merchant
+  }
   
   
   return (
@@ -136,7 +152,8 @@ export default function AllPerks() {
                 type="text"
                 className="input"
                 placeholder="Enter perk name..."
-                
+                value={searchQuery} // Controlled input
+                onChange={handleSearchInputChange} // Update state on input change
               />
               <p className="text-xs text-zinc-500 mt-1">
                 Auto-searches as you type, or press Enter / click Search
@@ -151,7 +168,8 @@ export default function AllPerks() {
               </label>
               <select
                 className="input"
-                
+                value={merchantFilter} // Controlled select
+                onChange={handleMerchantFilterChange} // Update state on selection change
               >
                 <option value="">All Merchants</option>
                 
